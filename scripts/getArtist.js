@@ -3,6 +3,7 @@ var Nightmare = require('nightmare'),
     $ = require('cheerio'),
     fs = require('fs'),
     jsonfile = require('jsonfile'),
+    path = require('path'),
     nightmare = Nightmare();
 
 var starting_url = 'http://genius.com/artists',
@@ -43,25 +44,27 @@ function getArtistUrls(listUrls) {
 
             return artists_object;
         }).then(function(artists_object) {
+            // add the artists from this page to the global list
+            _.extend(all_artists_object, artists_object);
+
             if (listUrls.length === 0) {
                 // save the entire json-list of artists to a file and exit
                 saveArtistList(all_artists_object);
             } else {
-                // add the artists from this page to the global list
-                _.extend(all_artists_object, artists_object);
                 // go to the next list of artists
                 getArtistUrls(listUrls);
             }
 
         }).catch(function(error) {
-            console.error('failed', error);
+            console.error('failed', error.message);
         });
 
 }
 
 function saveArtistList(all_artists_object) {
+    var fileName = path.join(__dirname, '../collections/artistUrls.js');
     // save the object as json to a file
-    jsonfile.writeFileSync('../collections/artistUrls.js', all_artists_object);
+    jsonfile.writeFileSync(fileName, all_artists_object);
     // exit the script
     process.exit();
 }
