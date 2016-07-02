@@ -1,11 +1,3 @@
-var urls = [
-    'http://cnn.com',
-    'http://google.com',
-    'http://jasongreenonline.com'
-];
-
-
-
 var Nightmare = require('nightmare'),
     _ = require('underscore'),
     $ = require('cheerio'),
@@ -16,7 +8,8 @@ var Nightmare = require('nightmare'),
 var starting_url = 'http://genius.com/artists',
     all_artists_object = {};
 
-// get list of urls sorted alphabetically
+// get list of urls to pages that have lists of artists, sorted alphabetically.
+// each page has artists with a different starting letter A-Z, and '#' for numbers
 function getListUrls() {
 
     nightmare.goto(starting_url)
@@ -30,7 +23,6 @@ function getListUrls() {
             return artist_list_urls;
         })
         .then(function(list) {
-            console.log(list);
             getArtistUrls(list);
         });
 
@@ -42,7 +34,7 @@ function getArtistUrls(listUrls) {
     return nightmare.goto(url)
         .evaluate(function() {
             var artists_object = {};
-            // save each artists page link as key/value in an object (key=name, val=url)
+            // save each artists page link as key/value in an object (key=artistName, val=url)
             $('a.artists_index_list-artist_name, .artists_index_list>li>a').each(function() {
                 var artist_name = $(this).text();
                 var artist_url = $(this).attr('href');
@@ -53,7 +45,7 @@ function getArtistUrls(listUrls) {
         }).then(function(artists_object) {
             if (listUrls.length === 0) {
                 // save the entire json-list of artists to a file and exit
-                saveArtistList();
+                saveArtistList(all_artists_object);
             } else {
                 // add the artists from this page to the global list
                 _.extend(all_artists_object, artists_object);
@@ -67,9 +59,9 @@ function getArtistUrls(listUrls) {
 
 }
 
-function saveArtistList() {
+function saveArtistList(all_artists_object) {
     // save the object as json to a file
-    jsonfile.writeFileSync('artists.js', all_artists_object);
+    jsonfile.writeFileSync('../collections/artistUrls.js', all_artists_object);
     // exit the script
     process.exit();
 }
