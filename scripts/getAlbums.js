@@ -1,15 +1,5 @@
 
 
-// go to artist page
-// get all album names and urls as json object
-// {
-//     kendrick: {
-//         TPAB: tbap/url/
-//     }
-// }
-// extend to master object
-// write master object to file
-
 var Nightmare = require('nightmare'),
     _ = require('underscore'),
     $ = require('cheerio'),
@@ -19,20 +9,49 @@ var Nightmare = require('nightmare'),
     nightmare = Nightmare();
 
 var starting_url = 'http://genius.com/artists',
+    all_albums_object = {},
+    file_number = 0,
+    partial_artist_url_list = [];
+
+/** 
+ * Get artist names and the urls to the page that has their albums listed out.
+ */
+function readArtistUrls () {
+    // reset the albums list for a new file
     all_albums_object = {};
 
+    var file_name = path.join(__dirname, '../collections/artistUrls/artistUrls'+file_number+'.js'),
+    artist_urls_object;
 
-var fileName = path.join(__dirname, '../collections/artistUrls.js');
-// get the json object of artist page urls
-var artist_urls_object = jsonfile.readFileSync(fileName);
-// map to an array of arrays => [artistName, artistsPageUrl]
-var artist_urls_array = _.map(artist_urls_object, function (val, key) {
-    return [key, val];
-});
+    try {
+        // get the json object of artist page urls
+        artist_urls_object = jsonfile.readFileSync(file_name);
+    } catch (err) {
+        if (err.code === 'ENOENT') {
+          console.log('File'+file_name+' not found!');
+          // exit the script
+          process.exit();
+        } else {
+          throw err;
+        }
+    }
+
+    // map to an array of arrays => [artistName, artistsPageUrl]
+    var artist_urls_array = _.map(artist_urls_object, function (val, key) {
+        return [key, val];
+    });
+
+    return artist_urls_array;
+}
 
 
-function getAlbumUrls(listUrls) {
-    var artist = listUrls.pop();
+function getAlbumUrls () {
+    // if we've gone through all the artists in this specific list, go to the next one
+    if (partial_artist_url_list.length === 0) {
+        partial_artist_url_list = readArtistUrls();
+    }
+
+    var artist = partial_artist_url_list.pop();
     // go to a artist's page
     return nightmare.goto(artist[1])
         .evaluate(function (artist) {
@@ -53,13 +72,14 @@ function getAlbumUrls(listUrls) {
             // add the artists from this page to the global list
             _.extend(all_albums_object, albums_object);
 
-            if (listUrls.length === 0) {
-                // save the entire json-list of artists to a file and exit
+            if (partial_artist_url_list.length === 0) {
+                // save the entire json-list of artists to a file
                 saveArtistList(all_albums_object);
-            } else {
-                // go to the next list of artists
-                getAlbumUrls(listUrls);
+                file_number++;
             }
+
+            // go to the next list of artists
+            getAlbumUrls();
 
         })
         .catch(function(error) {
@@ -70,12 +90,10 @@ function getAlbumUrls(listUrls) {
 
 function saveArtistList(all_albums_object) {
     jsonfile.spaces = 4;
-    var fileName = path.join(__dirname, '../collections/albumUrls.js');
+    var file_name = path.join(__dirname, '../collections/albumUrls/albumUrls'+file_number+'.js');
     // save the object as json to a file
-    jsonfile.writeFileSync(fileName, all_albums_object);
-    // exit the script
-    process.exit();
+    jsonfile.writeFileSync(file_name, all_albums_object);
 }
 
 
-getAlbumUrls(artist_urls_array);
+getAlbumUrls();

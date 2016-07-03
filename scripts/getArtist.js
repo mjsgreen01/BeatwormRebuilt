@@ -7,7 +7,7 @@ var Nightmare = require('nightmare'),
     nightmare = Nightmare();
 
 var starting_url = 'http://genius.com/artists',
-    all_artists_object = {};
+    file_number = 0;
 
 // get list of urls to pages that have lists of artists, sorted alphabetically.
 // each page has artists with a different starting letter A-Z, and '#' for numbers
@@ -44,12 +44,12 @@ function getArtistUrls(listUrls) {
 
             return artists_object;
         }).then(function(artists_object) {
-            // add the artists from this page to the global list
-            _.extend(all_artists_object, artists_object);
+            // save the json-list of artists to a file
+            saveArtistList(artists_object);
 
+            // if we've gone thorugh all the lists of artists, exit the script
             if (listUrls.length === 0) {
-                // save the entire json-list of artists to a file and exit
-                saveArtistList(all_artists_object);
+                process.exit();
             } else {
                 // go to the next list of artists
                 getArtistUrls(listUrls);
@@ -61,12 +61,12 @@ function getArtistUrls(listUrls) {
 
 }
 
-function saveArtistList(all_artists_object) {
-    var fileName = path.join(__dirname, '../collections/artistUrls.js');
+function saveArtistList(artists_object) {
+    jsonfile.spaces = 4;
+    var fileName = path.join(__dirname, '../collections/artistUrls/artistUrls'+file_number+'.js');
     // save the object as json to a file
-    jsonfile.writeFileSync(fileName, all_artists_object);
-    // exit the script
-    process.exit();
+    jsonfile.writeFileSync(fileName, artists_object);
+    file_number++;
 }
 
 
