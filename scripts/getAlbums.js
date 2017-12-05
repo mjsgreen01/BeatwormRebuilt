@@ -13,8 +13,10 @@ var starting_url = 'http://genius.com/artists',
     file_number = 0,
     partial_artist_url_list = [];
 
-/** 
- * Get artist names and the urls to the page that has their albums listed out.
+/**
+ * Get artist names and artist-page urls from local files, one file at a time.
+ * Artist page should have all their albums listed out.
+ * @return Array of tuples with name & url
  */
 function readArtistUrls () {
     // reset the albums list for a new file
@@ -44,7 +46,10 @@ function readArtistUrls () {
     return artist_urls_array;
 }
 
-
+/**
+ * Go to each artist's page and get name & link to each album.
+ * Final JSON object is structured `{ artistName: { albumName: albumUrl } }`
+ */
 function getAlbumUrls () {
     // if we've gone through all the artists in this specific list, go to the next one
     if (partial_artist_url_list.length === 0) {
@@ -64,21 +69,21 @@ function getAlbumUrls () {
                 var album_url = $(this).attr('href');
                 albums_object[artist_name][album_name] = album_url;
             });
-            
+
             return albums_object;
         }, artist)
         .then(function(albums_object) {
             console.log('album object: ',albums_object);
-            // add the artists from this page to the global list
+            // add the albums from this page to the global list
             _.extend(all_albums_object, albums_object);
 
             if (partial_artist_url_list.length === 0) {
-                // save the entire json-list of artists to a file
-                saveArtistList(all_albums_object);
+                // save the entire json-list of albums to a file
+                saveAlbumList(all_albums_object);
                 file_number++;
             }
 
-            // go to the next list of artists
+            // go to the next list of albums
             getAlbumUrls();
 
         })
@@ -88,7 +93,7 @@ function getAlbumUrls () {
 
 }
 
-function saveArtistList(all_albums_object) {
+function saveAlbumList(all_albums_object) {
     jsonfile.spaces = 4;
     var file_name = path.join(__dirname, '../collections/albumUrls/albumUrls'+file_number+'.js');
     // save the object as json to a file

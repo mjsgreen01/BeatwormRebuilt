@@ -9,8 +9,10 @@ var Nightmare = require('nightmare'),
 var starting_url = 'http://genius.com/artists',
     file_number = 0;
 
-// get list of urls to pages that have lists of artists, sorted alphabetically.
-// each page has artists with a different starting letter A-Z, and '#' for numbers
+/**
+ * Get list of urls to pages that have lists of artists, sorted alphabetically.
+ * Each page has artists with a different starting letter A-Z, and '#' for numbers
+ */
 function getListUrls() {
 
     nightmare.goto(starting_url)
@@ -29,6 +31,10 @@ function getListUrls() {
 
 }
 
+/**
+ * Go to each page with list of artists, and get artist names & artist-page urls
+ * Final JSON object is structured `{ artistName: artistUrl }`
+ */
 function getArtistUrls(listUrls) {
     url = listUrls.pop();
     // go to a list of artists

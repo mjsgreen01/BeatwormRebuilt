@@ -1,14 +1,3 @@
-// "Dr. Dre": {
-//     "2001": {
-//         "The Chronic (Intro)": "http://genius.com/Dr-dre-the-chronic-intro-lyrics",
-
-//     },
-//     "Compton": {
-
-//     }
-// }
-
-
 
 var Nightmare = require('nightmare'),
     _ = require('underscore'),
@@ -20,10 +9,12 @@ var Nightmare = require('nightmare'),
 
 var all_songs_array = [],
     file_number = 0,
-    partial_artist_url_list = [];
+    partial_album_url_list = [];
 
-/** 
- * Get artist names and the urls to the page that has their albums listed out.
+/**
+ * Get album urls from local files, one file at a time.
+ * Album page should have all the albums songs listed out.
+ * @return Array of urls to individual song-pages
  */
 function readAlbumUrls () {
     // reset the songs list for a new file
@@ -45,30 +36,28 @@ function readAlbumUrls () {
         }
     }
 
-    // map to an array of arrays => [artistName, artistsPageUrl]
-    var album_urls_array = _.map(album_urls_object, function (val, key) {
-        return _.map(val, function (val, key) {
-            return val;
+    // map to an array of album-urls
+    var album_urls_array = _.flatten(_.map(album_urls_object, function (albums_object, artist_name) {
+        return _.map(albums_object, function (album_url, album_name) {
+            return album_url;
         });
-    });
-
-    // flatten from array of arrays to single array
-    album_urls_array = album_urls_array.reduce(function(a, b) {
-      return a.concat(b);
-    }, []);
+    }));
 
     return album_urls_array;
 }
 
-
+/**
+ * Go to each album's page and get link to each song.
+ * Final JSON object is array of song-urls
+ */
 function getSongUrls () {
-    // if we've gone through all the artists in this specific list, go to the next one
-    if (partial_artist_url_list.length === 0) {
-        partial_artist_url_list = readAlbumUrls();
+    // if we've gone through all the albums in this specific list, go to the next one
+    if (partial_album_url_list.length === 0) {
+        partial_album_url_list = readAlbumUrls();
     }
 
-    var albumUrl = partial_artist_url_list.pop();
-    // go to a artist's page
+    var albumUrl = partial_album_url_list.pop();
+    // go to a album's page
     return nightmare.goto('http://genius.com' + albumUrl)
         .evaluate(function () {
             var song_urls_array = [];
@@ -77,21 +66,21 @@ function getSongUrls () {
                 var album_url = $(this).attr('href');
                 song_urls_array.push(album_url);
             });
-            
+
             return song_urls_array;
         })
         .then(function(song_urls_array) {
-            console.log('songs array: ',song_urls_array);
-            // add the artists from this page to the global list
+            // console.log('songs array: ',song_urls_array);
+            // add the songs from this page to the global list
             all_songs_array = all_songs_array.concat(song_urls_array);
 
-            if (partial_artist_url_list.length === 0) {
-                // save the entire json-list of artists to a file
+            if (partial_album_url_list.length === 0) {
+                // save the entire json-list of song-urls to a file
                 saveArtistList(all_songs_array);
                 file_number++;
             }
 
-            // go to the next list of artists
+            // go to the next list of songs
             getSongUrls();
 
         })
