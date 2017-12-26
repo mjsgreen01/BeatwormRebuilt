@@ -3,8 +3,11 @@
 ### Getting Started
 
 ```bash
-# install dependencies
+# Install dependencies
 yarn install
+
+# Start dev server
+npm run start:dev
 ```
 
 ### Kanban Board:
