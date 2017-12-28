@@ -53,7 +53,7 @@ function getSongData () {
     return nightmare.goto(song_url)
         .evaluate(function () {
             // scrape song data
-            var song_data = buildSongObject();
+            var song_data = buildSongObject(song_url);
             
             return song_data;
         })
@@ -79,32 +79,45 @@ function getSongData () {
 }
 
 /**
- * Scrape song data from the page and addit to an object
+ * Scrape song data from the page and add it to an object
  * @returns {}
  */
-function buildSongObject () {
+function buildSongObject (song_url) {
     let data = {};
-    data.artist = getArtist();
-    data.songTitle = getSongTitle();
-    data.featuredArtists = getFeatured();
-    data.producers = getProducers();
-    data.album = getAlbum();
-    data.audioLink = getAudioLink();
-    data.tags = getTags();
+    data.artist = getArtist(song_url);
+    data.songTitle = getSongTitle(song_url);
+    data.featuredArtists = getFeatured(song_url);
+    data.producers = getProducers(song_url);
+    data.album = getAlbum(song_url);
+    data.audioLink = getAudioLink(song_url);
+    data.tags = getTags(song_url);
 
     return data;
 }
 
-
-function getArtist () {
-    return $('.song_header-primary_info-primary_artist').text();
+/**
+ * Log message if data is not found
+ * @param exists: boolean
+ * @param type: string - indicates which piece of data is missing
+ * @param url: string - url of the page being scraped
+ */
+function logDataNotFound(exists, type, url) {
+    if (!exists) {
+        console.log('data not found ', type, ' ', url);
+    }
 }
 
-function getSongTitle () {
+function getArtist (song_url) {
+    let artist = $('[class*=primary_info-primary_artist]');
+    logDataNotFound(artist && artist.text(), 'artist', song_url);
+    return artist.text();
+}
+
+function getSongTitle (song_url) {
     return $('.song_header-primary_info-title').text();
 }
 
-function getFeatured () {
+function getFeatured (song_url) {
     var artists = [];
     $('[label="Featuring"]').find('a').each(function() {
         var artist_name = $(this).text();
@@ -114,7 +127,7 @@ function getFeatured () {
     return artists;
 }
 
-function getProducers () {
+function getProducers (song_url) {
     
     //TODO: handle case where need to click to show `x more producers`
 
@@ -127,15 +140,15 @@ function getProducers () {
     return artists;
 }
 
-function getAlbum () {
+function getAlbum (song_url) {
     return $('song-primary-album a').text();
 }
 
-function getAudioLink () {
+function getAudioLink (song_url) {
     return $('.song_media_controls-selector-icon').find('a').attr('href');
 }
 
-function getTags () {
+function getTags (song_url) {
     var tags = [];
     $('.metadata_unit-tags').find('a').each(function() {
         var tag = $(this).text();
@@ -145,7 +158,7 @@ function getTags () {
     return tags;
 }
 
-function getAdditionalProducers () {
+function getAdditionalProducers (song_url) {
     var artists = [];
     $('[label="Additional Production by"]').find('a').each(function() {
         var artist_name = $(this).text();
