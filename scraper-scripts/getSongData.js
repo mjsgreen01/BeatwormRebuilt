@@ -19,7 +19,7 @@ function readSongUrls () {
     // reset the songs list for a new file
     all_songs_array = [];
 
-    var file_name = path.join(__dirname, '../collections/albumUrls/albumUrls'+file_number+'.js'),
+    var file_name = path.join(__dirname, '../collections/songUrls/songUrls'+file_number+'.js'),
     song_urls;
 
     try {
@@ -38,6 +38,7 @@ function readSongUrls () {
     return song_urls;
 }
 
+
 /**
  * Go to each song's page and scrape metadata.
  * Final JSON objects will have properties: artist, songTitle, featuredArtists, producers, album, audioLink, tags
@@ -50,17 +51,19 @@ function getSongData () {
 
     var song_url = partial_song_url_list.pop();
     // go to a song's page
-    return nightmare.goto(song_url)
-        .evaluate(function () {
-            // scrape song data
-            var song_data = buildSongObject(song_url);
-            
-            return song_data;
+    nightmare
+        // TODO: remove this on event when done debugging and running the script
+        .on('console', (log,a,b,c,d) => {
+            console.log(a,b,c,d)
         })
+        .goto(song_url)
+        .inject('js', 'getSongDataBrowserHelpers.js')
+        // .wait()
+        .evaluate(buildSongObject, song_url)
         .then(function(song_data) {
-            // console.log('songs data: ',song_data);
+            console.log('songs data: ',all_songs_array);
             // add the song from this page to the global list
-            all_songs_array = all_songs_array.push(song_data);
+            all_songs_array.push(song_data);
 
             if (partial_song_url_list.length === 0) {
                 // save the entire json-list of songs to a file
@@ -84,93 +87,36 @@ function getSongData () {
  */
 function buildSongObject (song_url) {
     let data = {};
-    data.artist = getArtist(song_url);
-    data.songTitle = getSongTitle(song_url);
-    data.featuredArtists = getFeatured(song_url);
-    data.producers = getProducers(song_url);
-    data.album = getAlbum(song_url);
-    data.audioLink = getAudioLink(song_url);
-    data.tags = getTags(song_url);
+    data.artist = window.browserHelpers.getArtist(song_url);
+    data.songTitle = window.browserHelpers.getSongTitle(song_url);
+    data.featuredArtists = window.browserHelpers.getFeatured(song_url);
+    data.producers = window.browserHelpers.getProducers(song_url);
+    data.album = window.browserHelpers.getAlbum(song_url);
+    data.audioLink = window.browserHelpers.getAudioLink(song_url);
+    data.tags = window.browserHelpers.getTags(song_url);
 
     return data;
 }
 
-/**
- * Log message if data is not found
- * @param exists: boolean
- * @param type: string - indicates which piece of data is missing
- * @param url: string - url of the page being scraped
- */
-function logDataNotFound(exists, type, url) {
-    if (!exists) {
-        console.log('data not found ', type, ' ', url);
-    }
-}
-
-function getArtist (song_url) {
-    let artist = $('[class*=primary_info-primary_artist]');
-    logDataNotFound(artist && artist.text(), 'artist', song_url);
-    return artist.text();
-}
-
-function getSongTitle (song_url) {
-    return $('.song_header-primary_info-title').text();
-}
-
-function getFeatured (song_url) {
-    var artists = [];
-    $('[label="Featuring"]').find('a').each(function() {
-        var artist_name = $(this).text();
-        // trim whitespace and add to list of artists
-        artists.push($.trim(artist_name));
-    });
-    return artists;
-}
-
-function getProducers (song_url) {
-    
-    //TODO: handle case where need to click to show `x more producers`
-
-    var artists = [];
-    $('[label="Produced By"]').find('a').each(function() {
-        var artist_name = $(this).text();
-        // trim whitespace and add to list of artists
-        artists.push($.trim(artist_name));
-    });
-    return artists;
-}
-
-function getAlbum (song_url) {
-    return $('song-primary-album a').text();
-}
-
-function getAudioLink (song_url) {
-    return $('.song_media_controls-selector-icon').find('a').attr('href');
-}
-
-function getTags (song_url) {
-    var tags = [];
-    $('.metadata_unit-tags').find('a').each(function() {
-        var tag = $(this).text();
-        // trim whitespace and add to list of tags
-        tags.push($.trim(tag));
-    });
-    return tags;
-}
-
 function getAdditionalProducers (song_url) {
+
     var artists = [];
-    $('[label="Additional Production by"]').find('a').each(function() {
-        var artist_name = $(this).text();
+    let elem = $('[label="Additional Production by"]');
+    logDataNotFound(elem && elem.find('a').length, 'additional producers section ', song_url);
+
+    // add each prod one at a time
+    elem.find('a').each(function() {
+        let elem = $(this);
+        logDataNotFound(elem && elem.text(), 'additional producer ', song_url);
         // trim whitespace and add to list of artists
-        artists.push($.trim(artist_name));
+        artists.push(elem.text().trim());
     });
     return artists;
 }
 
 function saveArtistList(all_songs_array) {
     jsonfile.spaces = 4;
-    var file_name = path.join(__dirname, '../collections/songUrls/songUrls'+file_number+'.js');
+    var file_name = path.join(__dirname, '../collections/songData/songData'+file_number+'.js');
     // save the object as json to a file
     jsonfile.writeFileSync(file_name, all_songs_array);
 }
