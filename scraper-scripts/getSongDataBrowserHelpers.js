@@ -85,7 +85,11 @@ window.browserHelpers.getProducers = function (song_url) {
 
 
 window.browserHelpers.getAlbum = function (song_url) {
-    let elem = $('song-primary-album a');
+    let elem = $('[class*=metadata_unit]')
+        .filter(function() {
+            return $(this).children('.metadata_unit-label').text().trim() === 'Album';
+        });
+    elem = elem.find('a');
     window.browserHelpers.logDataNotFound(elem && elem.text(), 'album title ', song_url);
     return elem.text();
 }
