@@ -30,7 +30,7 @@ window.browserHelpers.getArtist = function (song_url) {
 
 window.browserHelpers.getSongTitle = function (song_url) {
 
-    // TODO: remove backslashes before apostrophes
+    // TODO: remove backslashes before apostrophes? or leave for migration? will removing `\` cause problems with quotes closing?
 
     let elem = $('[class*=primary_info-title]');
     window.browserHelpers.logDataNotFound(elem && elem.text(), 'song title ', song_url);
@@ -46,7 +46,7 @@ window.browserHelpers.getFeatured = function (song_url) {
         return $(this).children('.metadata_unit-label').text().trim() === 'Featuring';
     });
     // console.log('elem ', elem.html());
-    window.browserHelpers.logDataNotFound(elem && elem.find('a').length, 'featuring section ', song_url);
+    window.browserHelpers.logDataNotFound(elem, 'featuring section ', song_url);
 
     // add each featured artist one at a time
     elem.find('a').each(function() {
@@ -66,8 +66,12 @@ window.browserHelpers.getProducers = function (song_url) {
     //TODO: combine 'additional producers' into this sectio
 
     var artists = [];
-    let elem = $('[label="Produced By"]');
-    window.browserHelpers.logDataNotFound(elem && elem.find('a').length, 'producers section ', song_url);
+    let elem = $('[class*=metadata_unit]')
+        .filter(function() {
+            return $(this).children('.metadata_unit-label').text().trim() === 'Produced by';
+        });
+
+    window.browserHelpers.logDataNotFound(elem, 'producers section ', song_url);
 
     // add each prod one at a time
     elem.find('a').each(function() {
