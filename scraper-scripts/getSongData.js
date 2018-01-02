@@ -1,11 +1,13 @@
-
+var opts = {
+    show: true
+};
 var Nightmare = require('nightmare'),
     _ = require('underscore'),
     $ = require('cheerio'),
     fs = require('fs'),
     jsonfile = require('jsonfile'),
     path = require('path'),
-    nightmare = Nightmare();
+    nightmare = Nightmare(opts);
 
 var all_songs_array = [],
     file_number = 0,
@@ -58,7 +60,6 @@ function getSongData () {
         })
         .goto(song_url)
         .inject('js', 'getSongDataBrowserHelpers.js')
-        // .wait()
         .evaluate(buildSongObject, song_url)
         .then(function(song_data) {
             console.log('songs data: ',all_songs_array);

@@ -96,8 +96,8 @@ window.browserHelpers.getAlbum = function (song_url) {
 
 
 window.browserHelpers.getAudioLink = function (song_url) {
-    let elem = $('.song_media_controls-selector-icon').find('a');
-
+    let elem = $('.song_media_controls-provider')
+        .find('a');
     window.browserHelpers.logDataNotFound(elem && elem.attr('href'), 'song link ', song_url);
     return elem.attr('href');
 }
