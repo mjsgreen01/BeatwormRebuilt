@@ -21,11 +21,12 @@ function readSongUrls () {
     // reset the songs list for a new file
     all_songs_array = [];
 
-    var file_name = path.join(__dirname, '../collections/songUrls/songUrls'+file_number+'.js'),
-    song_urls;
+    var file_name = path.join(__dirname, '../collections/songUrls/songUrls'+file_number+'.js');
+    // var file_name = path.join(__dirname, '../collections/songUrls/testUrls.js');
+    var song_urls;
 
     try {
-        // get the json object of album page urls
+        // get the array of song urls
         song_urls = jsonfile.readFileSync(file_name);
     } catch (err) {
         if (err.code === 'ENOENT') {
@@ -59,7 +60,9 @@ function getSongData () {
             console.log(a,b,c,d)
         })
         .goto(song_url)
+        // load script in browser context
         .inject('js', 'getSongDataBrowserHelpers.js')
+        // scrape data
         .evaluate(buildSongObject, song_url)
         .then(function(song_data) {
             console.log('songs data: ',all_songs_array);
@@ -94,7 +97,6 @@ function buildSongObject (song_url) {
     data.producers = window.browserHelpers.getProducers(song_url);
     data.album = window.browserHelpers.getAlbum(song_url);
     data.audioLink = window.browserHelpers.getAudioLink(song_url);
-    data.tags = window.browserHelpers.getTags(song_url);
 
     return data;
 }

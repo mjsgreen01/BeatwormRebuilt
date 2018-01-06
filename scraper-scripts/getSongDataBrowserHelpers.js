@@ -38,6 +38,29 @@ window.browserHelpers.getSongTitle = function (song_url) {
 }
 
 
+window.browserHelpers.isNumeric = function (num) {
+    return !isNaN(num)
+}
+
+/**
+ * If a section has `plus x more`, click to expand the additional info.
+ * @param links: Array<elem> - array of anchor elements
+ * @return boolean: true if expanded section, false if not
+ */
+window.browserHelpers.expandSection = function (links) {
+    let more_link = links.filter('.metadata_unit-show_more');
+
+    if (more_link && more_link.length) {
+        // Stop propogation because it causes problems from some genius script
+        more_link.click(function( event ) {
+            event.stopPropagation();
+        });
+        more_link.click();
+        return true;
+    }
+}
+
+
 window.browserHelpers.getFeatured = function (song_url) {
 
     var artists = [];
@@ -47,6 +70,8 @@ window.browserHelpers.getFeatured = function (song_url) {
     });
     // console.log('elem ', elem.html());
     window.browserHelpers.logDataNotFound(elem, 'featuring section ', song_url);
+
+    //TODO: handle case where need to click to show `x more featured`
 
     // add each featured artist one at a time
     elem.find('a').each(function() {
@@ -61,11 +86,10 @@ window.browserHelpers.getFeatured = function (song_url) {
 
 window.browserHelpers.getProducers = function (song_url) {
 
-    //TODO: handle case where need to click to show `x more producers`
-
-    //TODO: combine 'additional producers' into this sectio
+    //TODO: combine 'additional producers' into this section (make list unique values)
 
     var artists = [];
+    // Find the producers section
     let elem = $('[class*=metadata_unit]')
         .filter(function() {
             return $(this).children('.metadata_unit-label').text().trim() === 'Produced by';
@@ -73,8 +97,17 @@ window.browserHelpers.getProducers = function (song_url) {
 
     window.browserHelpers.logDataNotFound(elem, 'producers section ', song_url);
 
+
+    //  if last link has `x more`, click to expand,
+    //      then re-scrape list
+    let links = elem.find('a');
+    if (window.browserHelpers.expandSection(links)) {
+        console.log('links clicked');
+        links = elem.find('a');
+    };
+
     // add each prod one at a time
-    elem.find('a').each(function() {
+    links.each(function() {
         let elem = $(this);
         window.browserHelpers.logDataNotFound(elem && elem.text(), 'producer ', song_url);
         // trim whitespace and add to list of artists
@@ -102,14 +135,4 @@ window.browserHelpers.getAudioLink = function (song_url) {
     return elem.attr('href');
 }
 
-
-window.browserHelpers.getTags = function (song_url) {
-    var tags = [];
-    $('.metadata_unit-tags').find('a').each(function() {
-        var tag = $(this).text();
-        // trim whitespace and add to list of tags
-        tags.push($.trim(tag));
-    });
-    return tags;
-}
 
