@@ -70,11 +70,16 @@ window.browserHelpers.getFeatured = function (song_url) {
     });
     // console.log('elem ', elem.html());
     window.browserHelpers.logDataNotFound(elem, 'featuring section ', song_url);
-
-    //TODO: handle case where need to click to show `x more featured`
+    
+    //  if last link has `x more`, click to expand,
+    //      then re-scrape list
+    let links = elem.find('a');
+    if (window.browserHelpers.expandSection(links)) {
+        links = elem.find('a');
+    };
 
     // add each featured artist one at a time
-    elem.find('a').each(function() {
+    links.each(function() {
         let elem = $(this);
         window.browserHelpers.logDataNotFound(elem && elem.text(), 'featuring ', song_url);
         // trim whitespace and add to list of artists
@@ -102,7 +107,6 @@ window.browserHelpers.getProducers = function (song_url) {
     //      then re-scrape list
     let links = elem.find('a');
     if (window.browserHelpers.expandSection(links)) {
-        console.log('links clicked');
         links = elem.find('a');
     };
 
