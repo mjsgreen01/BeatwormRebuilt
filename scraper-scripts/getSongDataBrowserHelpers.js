@@ -9,6 +9,7 @@
 
 window.browserHelpers = {};
 
+
 /**
  * Log message if data is not found
  * @param exists: boolean
@@ -21,6 +22,7 @@ window.browserHelpers.logDataNotFound = function (exists, type, url) {
     }
 }
 
+
 window.browserHelpers.getArtist = function (song_url) {
     let elem = $('[class*=primary_info-primary_artist]');
     window.browserHelpers.logDataNotFound(elem && elem.text(), 'artist ', song_url);
@@ -29,9 +31,6 @@ window.browserHelpers.getArtist = function (song_url) {
 
 
 window.browserHelpers.getSongTitle = function (song_url) {
-
-    // TODO: remove backslashes before apostrophes? or leave for migration? will removing `\` cause problems with quotes closing?
-
     let elem = $('[class*=primary_info-title]');
     window.browserHelpers.logDataNotFound(elem && elem.text(), 'song title ', song_url);
     return elem.text();
@@ -41,6 +40,7 @@ window.browserHelpers.getSongTitle = function (song_url) {
 window.browserHelpers.isNumeric = function (num) {
     return !isNaN(num)
 }
+
 
 /**
  * If a section has `plus x more`, click to expand the additional info.
@@ -70,7 +70,7 @@ window.browserHelpers.getFeatured = function (song_url) {
     });
     // console.log('elem ', elem.html());
     window.browserHelpers.logDataNotFound(elem, 'featuring section ', song_url);
-    
+
     //  if last link has `x more`, click to expand,
     //      then re-scrape list
     let links = elem.find('a');
@@ -90,9 +90,6 @@ window.browserHelpers.getFeatured = function (song_url) {
 
 
 window.browserHelpers.getProducers = function (song_url) {
-
-    //TODO: combine 'additional producers' into this section (make list unique values)
-
     var artists = [];
     // Find the producers section
     let elem = $('[class*=metadata_unit]')
@@ -101,7 +98,6 @@ window.browserHelpers.getProducers = function (song_url) {
         });
 
     window.browserHelpers.logDataNotFound(elem, 'producers section ', song_url);
-
 
     //  if last link has `x more`, click to expand,
     //      then re-scrape list

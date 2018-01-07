@@ -1,13 +1,20 @@
+/**
+ * Read each song-urls file, scrape each url, and map each file to
+ *  a song-data file.
+ */
+
+// For debugging: pass opts into `Nightmare()` to see the browser
 var opts = {
     show: true
 };
+
 var Nightmare = require('nightmare'),
     _ = require('underscore'),
     $ = require('cheerio'),
     fs = require('fs'),
     jsonfile = require('jsonfile'),
     path = require('path'),
-    nightmare = Nightmare(opts);
+    nightmare = Nightmare();
 
 var all_songs_array = [],
     file_number = 0,
@@ -56,16 +63,16 @@ function getSongData () {
     // go to a song's page
     nightmare
         // TODO: remove this on event when done debugging and running the script
-        .on('console', (log,a,b,c,d) => {
-            console.log(a,b,c,d)
-        })
+        // .on('console', (log,a,b,c,d) => {
+        //     console.log(a,b,c,d)
+        // })
         .goto(song_url)
         // load script in browser context
         .inject('js', 'getSongDataBrowserHelpers.js')
         // scrape data
         .evaluate(buildSongObject, song_url)
         .then(function(song_data) {
-            console.log('songs data: ',all_songs_array);
+            console.log('songs data: ',song_data);
             // add the song from this page to the global list
             all_songs_array.push(song_data);
 
@@ -101,22 +108,10 @@ function buildSongObject (song_url) {
     return data;
 }
 
-function getAdditionalProducers (song_url) {
-
-    var artists = [];
-    let elem = $('[label="Additional Production by"]');
-    logDataNotFound(elem && elem.find('a').length, 'additional producers section ', song_url);
-
-    // add each prod one at a time
-    elem.find('a').each(function() {
-        let elem = $(this);
-        logDataNotFound(elem && elem.text(), 'additional producer ', song_url);
-        // trim whitespace and add to list of artists
-        artists.push(elem.text().trim());
-    });
-    return artists;
-}
-
+/**
+ * Save the accumulated data to a file
+ * @param all_songs_array
+ */
 function saveArtistList(all_songs_array) {
     jsonfile.spaces = 4;
     var file_name = path.join(__dirname, '../collections/songData/songData'+file_number+'.js');
