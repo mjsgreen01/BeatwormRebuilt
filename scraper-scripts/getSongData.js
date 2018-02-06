@@ -13,11 +13,10 @@ var Nightmare = require('nightmare'),
     $ = require('cheerio'),
     fs = require('fs'),
     jsonfile = require('jsonfile'),
-    path = require('path'),
-    nightmare = Nightmare();
+    path = require('path');
 
 var all_songs_array = [],
-    file_number = 0,
+    file_number = 7,
     partial_song_url_list = [];
 
 /**
@@ -48,6 +47,37 @@ function readSongUrls () {
     return song_urls;
 }
 
+/**
+ * Scrape the next song url and add data to `all_songs_array`
+ */
+function evaluate() {
+    let nightmare = Nightmare();
+    var song_url = partial_song_url_list.pop();
+    // go to a song's page
+    return nightmare
+        // TODO: remove this on event when done debugging and running the script
+        // .on('console', (log,a,b,c,d) => {
+        //     console.log(a,b,c,d)
+        // })
+        .goto(song_url)
+        // load script in browser context
+        .inject('js', 'getSongDataBrowserHelpers.js')
+        // scrape data
+        .evaluate(buildSongObject, song_url).end()
+        .then(function(song_data) {
+            console.log('songs data: ',song_data);
+            // add the song from this page to the global list
+            all_songs_array.push(song_data);
+
+
+
+
+        })
+        .catch(function(error) {
+            console.error('failed', error);
+        });
+}
+
 
 /**
  * Go to each song's page and scrape metadata.
@@ -59,36 +89,30 @@ function getSongData () {
         partial_song_url_list = readSongUrls();
     }
 
-    var song_url = partial_song_url_list.pop();
-    // go to a song's page
-    nightmare
-        // TODO: remove this on event when done debugging and running the script
-        // .on('console', (log,a,b,c,d) => {
-        //     console.log(a,b,c,d)
-        // })
-        .goto(song_url)
-        // load script in browser context
-        .inject('js', 'getSongDataBrowserHelpers.js')
-        // scrape data
-        .evaluate(buildSongObject, song_url)
-        .then(function(song_data) {
-            console.log('songs data: ',song_data);
-            // add the song from this page to the global list
-            all_songs_array.push(song_data);
+    /**
+     * get first 10 (or less) songUrls
+     // add them to promises-array as nightmare-js promises
+     */
+    let promises = [];
+    let sample_size = partial_song_url_list.length < 10 ? partial_song_url_list.length : 10;
+    for (let i = 0; i < sample_size; i++) {
+        let promise = evaluate();
+        promises.push(promise);
+    }
 
-            if (partial_song_url_list.length === 0) {
-                // save the entire json-list of songs to a file
-                saveArtistList(all_songs_array);
-                file_number++;
-            }
-
-            // go to the next song
-            getSongData();
-
-        })
-        .catch(function(error) {
-            console.error('failed', error);
-        });
+    /**
+     * after all promises finish, check for remaining urls.
+     * if songs remaining, grab next 10 or less and repeat.
+     * if none remaining, grab next file and repeat
+     */
+    Promise.all(promises).then(() => {console.log('in promise all');
+        if (partial_song_url_list.length === 0) {
+            // save the entire json-list of songs to a file
+            saveArtistList(all_songs_array);
+            file_number++;
+        }
+        getSongData();
+    });
 
 }
 
@@ -121,10 +145,3 @@ function saveArtistList(all_songs_array) {
 
 
 getSongData();
-
-
-
-
-
-
-
