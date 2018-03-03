@@ -4,17 +4,13 @@ module.exports = (sequelize, DataTypes) => {
     name: {
       type: DataTypes.STRING,
       allowNull: false,
+      // defaultValue: "Sam",
     },
   });
 
   Artists.associate = (models) => {
-    Artists.hasMany(models.Song_Involvements, {
-      foreignKey: 'artistId',
-      as: 'songInvolvements',
-    }),
-    Artists.hasMany(models.Songs, {
-      foreignKey: 'artistId',
-      as: 'songs'
+    Artists.belongsToMany(models.Songs, {
+      through: models.Song_Involvements
     });
   };
   return Artists;

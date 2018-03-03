@@ -7,14 +7,5 @@ module.exports = (sequelize, DataTypes) => {
     featured: DataTypes.BOOLEAN,
     producer: DataTypes.BOOLEAN
   });
-
-  Song_Involvements.associate = (models) => {
-    Song_Involvements.belongsTo(models.Artists, {
-      foreignKey: 'artistId'
-    }),
-    Song_Involvements.belongsTo(models.Songs, {
-      foreignKey: 'songId'
-    });
-  };
   return Song_Involvements;
 };
