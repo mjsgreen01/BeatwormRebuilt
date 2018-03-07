@@ -13,9 +13,7 @@ module.exports = {
   list(req, res) {
     console.log("list function activated");
     return Artists
-      .findAll({
-        attributes: ['*']
-      })
+      .findAll({})
       .then(artists => res.status(201).send(artists))
       .catch(err => res.status(400).send(err))
   }
