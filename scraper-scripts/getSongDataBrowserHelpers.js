@@ -134,5 +134,3 @@ window.browserHelpers.getAudioLink = function (song_url) {
     window.browserHelpers.logDataNotFound(elem && elem.attr('href'), 'song link ', song_url);
     return elem.attr('href');
 }
-
-

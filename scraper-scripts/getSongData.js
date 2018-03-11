@@ -5,7 +5,10 @@
 
 // For debugging: pass opts into `Nightmare()` to see the browser
 var opts = {
-    show: true
+    show: true,
+    openDevTools: {
+        mode: 'detach'
+    }
 };
 
 var Nightmare = require('nightmare'),
@@ -17,7 +20,8 @@ var Nightmare = require('nightmare'),
 
 var all_songs_array = [],
     file_number = 7,
-    partial_song_url_list = [];
+    partial_song_url_list = [],
+    nightmareInstances = [];
 
 /**
  * Get song urls from local files, one file at a time.
@@ -50,32 +54,39 @@ function readSongUrls () {
 /**
  * Scrape the next song url and add data to `all_songs_array`
  */
-function evaluate() {
-    let nightmare = Nightmare();
+function evaluate(nightmare) {
     var song_url = partial_song_url_list.pop();
     // go to a song's page
     return nightmare
         // TODO: remove this on event when done debugging and running the script
-        // .on('console', (log,a,b,c,d) => {
-        //     console.log(a,b,c,d)
+        // .on('console', (log,a,b,c,d,e) => {
+        //     console.log(a,b,c,d,e)
         // })
         .goto(song_url)
-        // load script in browser context
+        // load jquery in browser context
+        .inject('js', `../node_modules/jquery/dist/jquery.min.js`)
+        // load scraping functions
         .inject('js', 'getSongDataBrowserHelpers.js')
         // scrape data
-        .evaluate(buildSongObject, song_url).end()
+        .evaluate(buildSongObject, song_url)
         .then(function(song_data) {
             console.log('songs data: ',song_data);
             // add the song from this page to the global list
             all_songs_array.push(song_data);
-
-
-
-
         })
         .catch(function(error) {
             console.error('failed', error);
+            return error;
         });
+}
+
+/**
+ * Generate nightmare instances to be used in parallel while script is running
+ */
+function generateNightmareInstances() {
+    for (let i = 0; i < 10; i++) {
+        nightmareInstances.push(Nightmare())
+    }
 }
 
 
@@ -84,6 +95,9 @@ function evaluate() {
  * Final JSON objects will have properties: artist, songTitle, featuredArtists, producers, album, audioLink, tags
  */
 function getSongData () {
+    if (nightmareInstances.length === 0) {
+        generateNightmareInstances();
+    }
     // if we've gone through all the songs in this specific list, go to the next one
     if (partial_song_url_list.length === 0) {
         partial_song_url_list = readSongUrls();
@@ -96,7 +110,7 @@ function getSongData () {
     let promises = [];
     let sample_size = partial_song_url_list.length < 10 ? partial_song_url_list.length : 10;
     for (let i = 0; i < sample_size; i++) {
-        let promise = evaluate();
+        let promise = evaluate(nightmareInstances[i]).catch((err) => err);
         promises.push(promise);
     }
 
