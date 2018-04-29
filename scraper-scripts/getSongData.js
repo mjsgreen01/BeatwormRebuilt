@@ -19,7 +19,7 @@ var Nightmare = require('nightmare'),
     path = require('path');
 
 var all_songs_array = [],
-    file_number = 7,
+    file_number = 26,
     partial_song_url_list = [],
     nightmareInstances = [];
 
@@ -84,7 +84,7 @@ function evaluate(nightmare) {
  * Generate nightmare instances to be used in parallel while script is running
  */
 function generateNightmareInstances() {
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 20; i++) {
         nightmareInstances.push(Nightmare())
     }
 }
@@ -104,11 +104,11 @@ function getSongData () {
     }
 
     /**
-     * get first 10 (or less) songUrls
+     * get first 20 (or less) songUrls
      // add them to promises-array as nightmare-js promises
      */
     let promises = [];
-    let sample_size = partial_song_url_list.length < 10 ? partial_song_url_list.length : 10;
+    let sample_size = partial_song_url_list.length < 20 ? partial_song_url_list.length : 20;
     for (let i = 0; i < sample_size; i++) {
         let promise = evaluate(nightmareInstances[i]).catch((err) => err);
         promises.push(promise);
@@ -116,7 +116,7 @@ function getSongData () {
 
     /**
      * after all promises finish, check for remaining urls.
-     * if songs remaining, grab next 10 or less and repeat.
+     * if songs remaining, grab next 20 or less and repeat.
      * if none remaining, grab next file and repeat
      */
     Promise.all(promises).then(() => {console.log('in promise all');
