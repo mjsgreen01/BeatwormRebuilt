@@ -1,9 +1,9 @@
-{
+module.exports = {
   "development": {
     "username": "samcatherman",
     "password": null,
     "database": "beatworm_dev",
-    "host": "127.0.0.1",
+    "host": process.env.PG_HOST || "127.0.0.1",
     "dialect": "postgres"
   },
   "test": {
