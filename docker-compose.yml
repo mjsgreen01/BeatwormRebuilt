@@ -1,6 +1,6 @@
 version: '3'
 services:
-  server:
+  beatworm-server:
     build: .
     command: npm run start:dev
     volumes:
@@ -12,6 +12,7 @@ services:
       - postgres
     environment:
       PG_HOST: postgres
+
   postgres:
     image: postgres:9.6.8-alpine
     restart: always
@@ -20,3 +21,14 @@ services:
     environment:
       POSTGRES_USER: samcatherman
       POSTGRES_DB: beatworm_dev
+
+  nginx:
+    image: nginx:latest
+    depends_on:
+      - beatworm-server
+    ports:
+      - "8080:80"
+    volumes:
+      - ./client:/usr/app/client
+      - ./nginx/beatworm.conf:/etc/nginx/conf.d/beatworm.conf
+
