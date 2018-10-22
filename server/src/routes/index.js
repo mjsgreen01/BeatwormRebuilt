@@ -1,4 +1,4 @@
-const artistsController = require('../controllers').artists;
+const artistsController = require('../controllers/index').artists;
 
 module.exports = (app) => {
   app.get('/api', (req, res) => res.status(200).send({

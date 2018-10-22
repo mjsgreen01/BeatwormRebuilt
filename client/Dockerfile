@@ -8,5 +8,6 @@ WORKDIR /usr/app
 COPY package*.json ./
 RUN npm install --quiet
 
-# Copy files onto container
 COPY . .
+
+RUN npm run build

@@ -12,7 +12,7 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 //routes
-require('./server/routes')(app);
+require('./routes/index')(app);
 //default route to send back a welcome message
 // app.get('*', (req, res) => res.status(200).send({
 //   message: 'Welcome to the bottom bunk',
