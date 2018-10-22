@@ -11,4 +11,3 @@ RUN npm install --quiet
 # Copy files onto container
 COPY . .
 
-EXPOSE 8000
