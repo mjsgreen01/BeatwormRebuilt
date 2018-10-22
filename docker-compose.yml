@@ -1,0 +1,22 @@
+version: '3'
+services:
+  server:
+    build: .
+    command: npm run start:dev
+    volumes:
+      - .:/usr/app/
+      - /usr/app/node_modules
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+    environment:
+      PG_HOST: postgres
+  postgres:
+    image: postgres:9.6.8-alpine
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: samcatherman
+      POSTGRES_DB: beatworm_dev
