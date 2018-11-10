@@ -2,7 +2,7 @@
 FROM node:9.11.1-alpine
 
 # Set current directory in docker container
-WORKDIR /usr/app
+WORKDIR /usr/src
 
 # Copy package.json to container and install deps
 COPY package*.json ./
