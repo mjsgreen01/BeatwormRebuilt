@@ -36,9 +36,7 @@ services:
 
   beatworm-ui:
     build: ./client
-    # TODO: figure out how to get webpack-dev-server working instead of webpack --watch.
-    #         webpack-dev-server seems to not change the files in any container/volume.
-    command: npm run build-watch
+    command: npm run start-dev-server
     volumes:
       - ./client/src:/usr/src/src
       - client-dist:/usr/src/dist
