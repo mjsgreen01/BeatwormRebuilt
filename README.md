@@ -3,13 +3,10 @@
 ### Getting Started
 
 ```bash
-# Install dependencies
-npm install
-
 # Start dev services and rebuild docker images
 docker-compose up --build
 
-# Quick start
+# Or quick-start
 docker-compose up
 ```
 View the UI at http://127.0.0.1:8080/
