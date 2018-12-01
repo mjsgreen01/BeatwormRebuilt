@@ -1,4 +1,4 @@
-const Artists = require('../models').Artists;
+const Artists = require('../models/index').Artists;
 
 module.exports = {
   create(req, res) {

@@ -4,10 +4,19 @@
 
 ```bash
 # Install dependencies
-yarn install
+npm install
 
-# Start dev server
-npm run start:dev
+# Start dev servers
+docker-compose up --build
+```
+View the UI at http://127.0.0.1:8080/
+
+API base route: http://127.0.0.1:8080/
+
+
+If you want to jump into an interactive shell in the server container:
+```
+docker exec -it beatwormremake_server_1 sh
 ```
 
 ### Kanban Board:

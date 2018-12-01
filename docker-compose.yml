@@ -1,10 +1,10 @@
 version: '3'
 services:
   beatworm-server:
-    build: .
+    build: ./server
     command: npm run start:dev
     volumes:
-      - .:/usr/app/
+      - ./server:/usr/app/
       - /usr/app/node_modules
     ports:
       - "8000:8000"
@@ -27,8 +27,19 @@ services:
     depends_on:
       - beatworm-server
     ports:
-      - "8080:80"
+      - "80:80"
+      - "443:443"
+      - "8080:443"
     volumes:
-      - ./client:/usr/app/client
       - ./nginx/beatworm.conf:/etc/nginx/conf.d/beatworm.conf
+      - client-dist:/opt/local/beatworm-ui
 
+  beatworm-ui:
+    build: ./client
+    command: npm run start-dev-server
+    volumes:
+      - ./client/src:/usr/src/src
+      - client-dist:/usr/src/dist
+
+volumes:
+  client-dist:

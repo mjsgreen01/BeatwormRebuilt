@@ -2,7 +2,7 @@
   "name": "beatworm-remake",
   "version": "1.0.0",
   "description": "Ruby to Node",
-  "main": "index.js",
+  "main": "src/app.js",
   "dependencies": {
     "body-parser": "^1.18.2",
     "express": "^4.16.2",
@@ -23,7 +23,7 @@
     "underscore": "^1.8.3"
   },
   "scripts": {
-    "start:dev": "npm run migrateDB && nodemon ./bin/www",
+    "start:dev": "npm run migrateDB && nodemon ./src/bin/www",
     "migrateDB": "sequelize db:migrate",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
