@@ -9,8 +9,8 @@
     "morgan": "^1.9.0",
     "pg": "^7.4.0",
     "pg-hstore": "^2.3.2",
-    "sequelize": "^4.28.1",
-    "sequelize-cli": "^4.0.0"
+    "sequelize": "^5.15.1",
+    "sequelize-cli": "^5.5.0"
   },
   "devDependencies": {
     "cheerio": "^0.20.0",
@@ -18,9 +18,9 @@
     "jquery": "^3.0.0",
     "jsonfile": "^2.3.1",
     "nightmare": "2.8.0",
-    "nodemon": "^1.12.7",
+    "nodemon": "^1.19.1",
     "path": "^0.12.7",
-    "underscore": "^1.8.3"
+    "underscore": "^1.9.1"
   },
   "scripts": {
     "start:dev": "npm run migrateDB && nodemon ./src/bin/www",
