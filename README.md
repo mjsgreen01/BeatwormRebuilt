@@ -3,20 +3,23 @@
 ### Getting Started
 
 ```bash
-# Install dependencies
-npm install
-
-# Start dev servers
+# Start dev services and rebuild docker images
 docker-compose up --build
+
+# Or quick-start
+docker-compose up
 ```
 View the UI at http://127.0.0.1:8080/
 
-API base route: http://127.0.0.1:8080/
+API base route: http://127.0.0.1:8080/api/
 
 
-If you want to jump into an interactive shell in the server container:
+If you want to jump into an interactive shell in the docker container:
 ```
-docker exec -it beatwormremake_server_1 sh
+# Server
+docker exec -it beatwormremake_beatworm-server sh
+# Client
+docker exec -it beatwormremake_beatworm-ui_1 sh
 ```
 
 ### Kanban Board:
