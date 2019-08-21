@@ -2,7 +2,10 @@ import React from 'react';
 
 const LandingPage = () => {
     return (
-        <div>WELCOME TO BEATWORM</div>
+        <div>
+            <div>WELCOME TO BEATWORM</div>
+
+        </div>
     );
 };
 

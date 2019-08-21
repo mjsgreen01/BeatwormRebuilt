@@ -38,7 +38,7 @@ module.exports = {
     },
     resolve: {
         modules: [path.resolve(__dirname, "node_modules"), path.resolve(__dirname, 'src')],
-        extensions: ['.js', '.jsx']
+        extensions: ['.ts', '.tsx', '.js', '.jsx']
     },
     devtool: 'inline-source-map',
     devServer: {
@@ -50,6 +50,11 @@ module.exports = {
     },
     module: {
         rules: [
+            {
+                test: /\.tsx?$/,
+                use: 'ts-loader',
+                exclude: /node_modules/
+            },
             {
                 test: /\.jsx?$/,
                 loaders: [

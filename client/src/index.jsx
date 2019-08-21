@@ -2,7 +2,7 @@ import React from 'react';
 import { render } from 'react-dom';
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 
-import { LandingPage } from './landing-page';
+import { LandingPage } from './landing-page/index';
 
 function bootStrap() {
     try {
