@@ -2,13 +2,13 @@ import React from 'react';
 import { render } from 'react-dom';
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 
-import { LandingPage } from './landing-page/index';
+import { ArtistList } from './artist-list/index';
 
 function bootStrap() {
     try {
         const App = () => (
             <Router>
-                <Route exact path="/" component={LandingPage}/>
+                <Route exact path="/" component={ArtistList}/>
             </Router>
         );
         render(<App/>, document.getElementById('root'));
