@@ -1,15 +1,18 @@
 import React from 'react';
 import { render } from 'react-dom';
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import { Provider } from 'react-redux';
 
 import { ArtistList } from './artist-list/index';
 
 function bootStrap() {
     try {
         const App = () => (
-            <Router>
-                <Route exact path="/" component={ArtistList}/>
-            </Router>
+            <Provider store={store}>
+                <Router>
+                    <Route exact path="/" component={ArtistList}/>
+                </Router>
+            </Provider>
         );
         render(<App/>, document.getElementById('root'));
 
