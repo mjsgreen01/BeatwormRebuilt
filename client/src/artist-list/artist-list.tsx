@@ -4,12 +4,17 @@ import React from 'react';
 // List artist names with links to individual artist pages
 //TODO: add link to artist page
 
-class ArtistList extends React.Component {
+interface ArtistListProps {
+    artists: Array<any>;
+    getArtists: ()=>{};
+}
+
+class ArtistList extends React.Component<ArtistListProps> {
 
     componentDidMount() {
         const {
             getArtists,
-        } = props;
+        } = this.props;
 
         //Load list of artists
         getArtists();
@@ -32,4 +37,10 @@ class ArtistList extends React.Component {
     }
 }
 
-export { ArtistList };
+const mapStateToProps = function(state) {
+    return {
+
+    }
+}
+
+export const ArtistListConnected = connect(mapStateToProps)(ArtistList);

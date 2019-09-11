@@ -1,5 +1,5 @@
-import { createStore } from 'redux'
-import { ArtistReducer } from './reducers/artist.reducer'
+import { createStore } from 'redux';
+import { ArtistReducer } from './reducers/artist.reducer';
 
 
 
