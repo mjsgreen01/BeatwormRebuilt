@@ -29,7 +29,7 @@ const plugins = [
 
 module.exports = {
     plugins,
-    entry: ["@babel/polyfill", './src/index.jsx'],
+    entry: ["@babel/polyfill", './src/index.tsx'],
     mode,
     output: {
         path: path.join(__dirname, 'dist'),
