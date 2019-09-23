@@ -1,7 +1,12 @@
 import React from 'react';
 
+interface ArtistCollabProps {
+    artist: any;
+    collabs: any[];
+};
+
 // List songs that an Artist produced
-const ArtistCollab = (props) => {
+const ArtistCollab = (props: ArtistCollabProps) => {
     const {
         artist,
         collabs,

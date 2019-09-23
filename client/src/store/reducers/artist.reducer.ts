@@ -1,8 +1,12 @@
-const initialState = {
+interface IinitialState {
+    artists: any[];
+};
+
+const initialState: IinitialState = {
     artists: [],
 };
 
-const ArtistReducer = (state: initialState, action) => {
+const ArtistReducer = (state: IinitialState, action: any) => {
     switch (action.type) {
 
     }

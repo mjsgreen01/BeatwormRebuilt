@@ -1,5 +1,6 @@
 import React from 'react';
-
+import { connect } from 'react-redux';
+import { store } from '../store/index';
 
 // List artist names with links to individual artist pages
 //TODO: add link to artist page
@@ -37,7 +38,7 @@ class ArtistList extends React.Component<ArtistListProps> {
     }
 }
 
-const mapStateToProps = function(state) {
+const mapStateToProps = function(state: any) {
     return {
 
     }
