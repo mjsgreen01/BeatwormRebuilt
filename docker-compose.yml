@@ -40,6 +40,8 @@ services:
     volumes:
       - ./client/src:/usr/src/src
       - client-dist:/usr/src/dist
+    environment:
+      NODE_ENV: development
 
 volumes:
   client-dist:
