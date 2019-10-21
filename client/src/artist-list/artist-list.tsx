@@ -23,11 +23,12 @@ class ArtistList extends React.Component<ArtistListProps> {
 
     render() {
         const {
-            artists,
+            artists = [],
         } = this.props;
 
         return (
             <div className="artist-list">
+                Artists:
                 {artists.map(artist => (
                     <div className="artist-list__artist">
                         {artist.name}
@@ -44,4 +45,8 @@ const mapStateToProps = function(state: any) {
     }
 }
 
-export const ArtistListConnected = connect(mapStateToProps)(ArtistList);
+const mapDispatchToProps = () => ({
+    getArtists: () => {}
+});
+
+export const ArtistListConnected = connect(mapStateToProps, mapDispatchToProps)(ArtistList);

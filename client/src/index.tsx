@@ -1,6 +1,9 @@
 import React from 'react';
 import { render } from 'react-dom';
-import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import { BrowserRouter, Router, Route, Link } from "react-router-dom";
+import { createBrowserHistory } from "history";
+
+const history = createBrowserHistory();
 import { Provider } from 'react-redux';
 
 import { ArtistListConnected } from './artist-list/index';
@@ -8,13 +11,14 @@ import { store } from './store/index';
 
 function bootStrap() {
     try {
-        const App = () => (
+        const App = () =>  (
             <Provider store={store}>
-                <Router>
-                    <Route exact path="/" component={ArtistListConnected}/>
-                </Router>
+                    <Router history={history}>
+                        <Route exact path="/" component={ArtistListConnected}/>
+                        {/*<Route exact path="/" render={() => <div>test</div>}/>*/}
+                    </Router>
             </Provider>
-        );
+        )
         render(<App/>, document.getElementById('root'));
 
     } catch (error) {
