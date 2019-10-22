@@ -1,6 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { store } from '../store/index';
+import { requestArtistsAction } from '../store/actions/artist.actions';
+
 
 // List artist names with links to individual artist pages
 //TODO: add link to artist page
@@ -39,14 +41,12 @@ class ArtistList extends React.Component<ArtistListProps> {
     }
 }
 
-const mapStateToProps = function(state: any) {
-    return {
+const mapStateToProps = (state: any) => ({
 
-    }
-}
+});
 
-const mapDispatchToProps = () => ({
-    getArtists: () => {}
+const mapDispatchToProps = (dispatch: any) => ({
+    getArtists: () => dispatch(requestArtistsAction()),
 });
 
 export const ArtistListConnected = connect(mapStateToProps, mapDispatchToProps)(ArtistList);

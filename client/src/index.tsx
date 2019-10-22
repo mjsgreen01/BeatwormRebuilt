@@ -15,7 +15,6 @@ function bootStrap() {
             <Provider store={store}>
                     <Router history={history}>
                         <Route exact path="/" component={ArtistListConnected}/>
-                        {/*<Route exact path="/" render={() => <div>test</div>}/>*/}
                     </Router>
             </Provider>
         )
