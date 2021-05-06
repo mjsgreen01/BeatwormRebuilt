@@ -20,7 +20,7 @@
     "nightmare": "2.8.0",
     "nodemon": "^1.19.1",
     "path": "^0.12.7",
-    "underscore": "^1.9.1"
+    "underscore": "^1.12.1"
   },
   "scripts": {
     "start:dev": "npm run migrateDB && nodemon ./src/bin/www",
