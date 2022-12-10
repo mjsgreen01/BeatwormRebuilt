@@ -5,7 +5,7 @@
   "main": "src/app.js",
   "dependencies": {
     "body-parser": "^1.18.2",
-    "express": "^4.16.2",
+    "express": "^4.17.3",
     "morgan": "^1.9.0",
     "pg": "^7.4.0",
     "pg-hstore": "^2.3.2",
